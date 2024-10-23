@@ -5,3 +5,7 @@ terraform {
     region = "us-east-1"
   }
 }
+
+module "cognito" {
+  source = "./modules/cognito"
+}
