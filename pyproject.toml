@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "researcher"
+version = "0.1.0"
+description = ""
+authors = ["Kanish Gosain <regokan@gmail.com>"]
+license = "Apache 2.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+boto3 = "^1.35.46"
+streamlit = "^1.39.0"
+python-dotenv = "^1.0.1"
+langchain = "^0.3.4"
+langchain-openai = "^0.2.3"
+langchain-community = "^0.3.3"
+fastapi = "^0.115.3"
+pydantic = "^2.9.2"
+uvicorn = "^0.32.0"
+tavily-python = "^0.5.0"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.10.0"
+watchdog = "^5.0.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
