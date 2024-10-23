@@ -1,0 +1,47 @@
+#### Common #####
+
+#  Python Virtual Environment
+.venv
+
+# Local files
+*.local
+
+# Python Cache
+__pycache__/
+
+# Environment files
+.env
+
+####### Terraform #######
+
+# Ignore Terraform state files
+*.tfstate
+*.tfstate.*
+
+# Ignore Terraform crash log files
+crash.log
+
+# Ignore Terraform variable files
+*.tfvars
+*.tfvars.json
+
+# Ignore override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ignore Terraform plan files
+*.tfplan
+
+# Ignore .terraform directory
+.terraform/
+
+# Ignore backup files
+*.backup
+
+# Ignore any other files that should not be committed
+.terraform.lock.hcl
+
+# Environment variables
+.env
