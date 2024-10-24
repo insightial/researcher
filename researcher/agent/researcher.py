@@ -1,10 +1,18 @@
-from researcher.llm.provider import LLMProvider
-from researcher.retriever.tavily import TavilyRetriever
+from langchain.memory import ConversationBufferMemory
+from llm.provider import LLMProvider
+from retriever.tavily import TavilyRetriever
 
 
 class Researcher:
     def __init__(self, **kwargs):
-        self.llm = LLMProvider.create_provider("openai")
+        memory = kwargs.pop("memory", None)
+        if memory is None:
+            memory = ConversationBufferMemory(return_messages=True)
+
+        self.memory = memory
+        self.llm = LLMProvider.create_provider(
+            "openai", model="gpt-3.5-turbo", memory=memory, **kwargs
+        )
         default_tavily_params = {
             "max_results": 10,
             "search_depth": "advanced",
@@ -32,3 +40,6 @@ class Researcher:
         response = await self.llm.agenerate(prompt)
 
         return response
+
+    def get_memory(self):
+        return self.memory

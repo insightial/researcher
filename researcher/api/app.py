@@ -1,27 +1,24 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from researcher.agent.researcher import Researcher
+from api.route.auth import router as auth_router
+from api.route.research import router as research_router
 from dotenv import load_dotenv
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
 app = FastAPI()
 
+# Set up CORS middleware configuration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:8000", "https://researcher.insightial.com"],
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
-class Query(BaseModel):
-    question: str
-
-
-@app.post("/research")
-async def research(query: Query):
-    try:
-        researcher = Researcher()
-        result = await researcher.research(query.question)
-
-        return {"result": result}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
+app.include_router(research_router)
+app.include_router(auth_router)
 
 if __name__ == "__main__":
     import uvicorn

@@ -1,6 +1,7 @@
-from langchain_community.tools import TavilySearchResults
-from typing import List, Dict
 import os
+from typing import Dict, List
+
+from langchain_community.tools import TavilySearchResults
 
 
 class TavilyRetriever:

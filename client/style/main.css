@@ -1,0 +1,15 @@
+.stApp {
+  background-color: #0f0f23;
+  color: #b19cd9;
+}
+.stButton > button {
+  color: #ffffff;
+  background-color: #7e5bef;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+}
+.stTextInput > div > div > input {
+  background-color: #1e1e3f;
+  color: #ffffff;
+}
