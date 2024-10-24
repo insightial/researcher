@@ -1,12 +1,13 @@
-import os
-
-import requests
 import streamlit as st
-from auth.cognito import check_auth_status, logout
+from auth.cognito import check_auth_status
 from components.message import message
+from hooks import (
+    create_new_thread,
+    get_ai_response,
+    get_messages_by_thread_id,
+    get_user_threads,
+)
 from streamlit_cookies_manager import CookieManager
-
-RESEARCHER_API_ENDPOINT = os.getenv("RESEARCHER_API_ENDPOINT")
 
 
 def chat_page():
@@ -17,13 +18,13 @@ def chat_page():
     try:
         if not check_auth_status(cookies):
             st.warning("Please log in to access the chat.")
-            st.switch_page("main.py")
+            st.switch_page("pages/home.py")
             return
     except Exception as e:
         st.error(f"An error occurred while checking authentication status: {str(e)}")
         return
 
-    st.title("AI Chat Assistant")
+    st.title("Research Assistant")
 
     # Create a layout with two columns
     col1, col2 = st.columns([1, 4])
@@ -98,62 +99,10 @@ def chat_page():
             st.session_state.messages.append({"role": "assistant", "content": response})
 
 
-def create_new_thread(cookies):
-    response = requests.post(
-        f"{RESEARCHER_API_ENDPOINT}/create_thread",
-        cookies={"access_token": cookies.get("access_token")},
-    )
-    if response.status_code == 200:
-        thread_id = response.json()["thread_id"]
-        st.session_state.current_thread = thread_id
-        st.success(f"New thread created: {thread_id}")
-    else:
-        st.error("Failed to create a new thread")
-
-
-def get_user_threads(cookies):
-    response = requests.get(
-        f"{RESEARCHER_API_ENDPOINT}/get_threads",
-        cookies={"access_token": cookies.get("access_token")},
-    )
-    if response.status_code == 200:
-        return response.json()["threads"]
-    st.error("Failed to fetch user threads")
-    return []
-
-
-def get_ai_response(prompt, cookies):
-    response = requests.post(
-        f"{RESEARCHER_API_ENDPOINT}/chat",
-        cookies={"access_token": cookies.get("access_token")},
-        json={"prompt": prompt, "thread_id": st.session_state.current_thread},
-    )
-    if response.status_code == 200:
-        return response.json()["response"]
-    st.error("Failed to get AI response")
-    return "I'm sorry, I couldn't process your request at the moment."
-
-
-def get_messages_by_thread_id(thread_id, cookies):
-    response = requests.get(
-        f"{RESEARCHER_API_ENDPOINT}/get_messages_by_thread_id/{thread_id}",
-        cookies={"access_token": cookies.get("access_token")},
-    )
-    if response.status_code == 200:
-        return response.json()["messages"]
-    st.error("Failed to fetch messages for the selected thread")
-    return []
-
-
-def clear_thread_history(cookies):
-    response = requests.post(
-        f"{RESEARCHER_API_ENDPOINT}/clear_thread",
-        cookies={"access_token": cookies.get("access_token")},
-        json={"thread_id": st.session_state.current_thread},
-    )
-    if response.status_code != 200:
-        st.error("Failed to clear thread history")
-
-
 if __name__ == "__main__":
+    st.set_page_config(
+        layout="wide",
+        initial_sidebar_state="collapsed",
+        page_title="Insightial Researcher",
+    )
     chat_page()
