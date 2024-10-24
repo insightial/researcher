@@ -3,9 +3,9 @@
 import os
 
 import streamlit as st
+from auth.cognito import check_auth_status
 from components import show_signin, show_signup
 from streamlit_cookies_manager import CookieManager
-from auth.cognito import check_auth_status
 
 
 def main():

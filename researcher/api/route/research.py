@@ -84,6 +84,7 @@ async def check_auth(_: dict = Depends(get_current_user)):
     """
     return {"authenticated": True}
 
+
 @router.get("/get_messages_by_thread_id/{thread_id}")
 async def get_messages_by_thread_id(
     thread_id: str, current_user: dict = Depends(get_current_user)

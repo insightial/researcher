@@ -64,7 +64,9 @@ def chat_page():
                 st.session_state.current_thread, cookies
             )
             for i, msg in enumerate(messages):
-                message(msg["content"], is_user=(msg["type"] == "human"), key=f"msg_{i}")
+                message(
+                    msg["content"], is_user=(msg["type"] == "human"), key=f"msg_{i}"
+                )
 
         # Move chat input to the bottom of the page
         st.markdown(

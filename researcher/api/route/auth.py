@@ -4,9 +4,15 @@ import os
 from datetime import timedelta
 
 import boto3
-from api.utils.auth import (calculate_secret_hash, create_access_token,
-                            get_user, get_user_details, get_username,
-                            user_exists, verify_jwt_token)
+from api.utils.auth import (
+    calculate_secret_hash,
+    create_access_token,
+    get_user,
+    get_user_details,
+    get_username,
+    user_exists,
+    verify_jwt_token,
+)
 from dotenv import load_dotenv
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Response
 from fastapi.responses import JSONResponse
