@@ -1,0 +1,8 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "researcher": "./langgraph_api/api.py:graph"
+  },
+  "python_version": "3.12",
+  "env": ".env"
+}
