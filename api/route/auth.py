@@ -4,7 +4,11 @@ import os
 from datetime import timedelta
 
 import boto3
-from api.utils.auth import (
+from dotenv import load_dotenv
+from fastapi import APIRouter, Cookie, Depends, HTTPException, Response
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel
+from utils.auth import (
     calculate_secret_hash,
     create_access_token,
     get_user,
@@ -13,10 +17,6 @@ from api.utils.auth import (
     user_exists,
     verify_jwt_token,
 )
-from dotenv import load_dotenv
-from fastapi import APIRouter, Cookie, Depends, HTTPException, Response
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel
 
 load_dotenv()
 
@@ -272,3 +272,11 @@ async def get_current_user(access_token: str = Cookie(None)):
         return {"username": username, "email": payload.get("email")}
     except Exception as e:
         raise HTTPException(status_code=401, detail="Invalid token") from e
+
+
+@router.get("/check_auth")
+async def check_auth(_: dict = Depends(get_current_user)):
+    """
+    Function to check if the user is authenticated
+    """
+    return {"authenticated": True}
