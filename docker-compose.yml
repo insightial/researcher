@@ -1,0 +1,41 @@
+services:
+  postgres:
+    image: postgres:13
+    container_name: local_postgres
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydatabase
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d
+    networks:
+      - app-network
+
+  db_init:
+    image: postgres:13
+    depends_on:
+      - postgres
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+    entrypoint:
+      [
+        "bash",
+        "-c",
+        "until pg_isready -h postgres -U myuser; do echo 'Waiting for Postgres...'; sleep 2; done; psql -h postgres -U myuser -d mydatabase -f /docker-entrypoint-initdb.d/create_threads_table.sql",
+      ]
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydatabase
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
