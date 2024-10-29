@@ -1,11 +1,16 @@
 services:
   postgres:
-    image: postgres:13
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
     container_name: local_postgres
     environment:
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
       POSTGRES_DB: mydatabase
+      LANG: en_US.UTF-8
+      LC_ALL: en_US.UTF-8
+      LC_CTYPE: en_US.UTF-8
     ports:
       - "5432:5432"
     volumes:
@@ -15,7 +20,7 @@ services:
       - app-network
 
   db_init:
-    image: postgres:13
+    image: postgres:15.3
     depends_on:
       - postgres
     volumes:
@@ -24,7 +29,7 @@ services:
       [
         "bash",
         "-c",
-        "until pg_isready -h postgres -U myuser; do echo 'Waiting for Postgres...'; sleep 2; done; psql -h postgres -U myuser -d mydatabase -f /docker-entrypoint-initdb.d/create_threads_table.sql",
+        "until pg_isready -h postgres -U myuser; do echo 'Waiting for Postgres...'; sleep 2; done; psql -h postgres -U myuser -d mydatabase -f /docker-entrypoint-initdb.d/create_pgvector_extension.sql",
       ]
     environment:
       POSTGRES_USER: myuser

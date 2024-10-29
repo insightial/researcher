@@ -1,0 +1,25 @@
+# Use PostgreSQL 15.3 as the base image
+FROM postgres:15.3
+
+# Set environment variables for locale
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
+# Install required packages and locales
+RUN apt update && \
+    apt install -y locales git build-essential postgresql-server-dev-15 && \
+    sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
+    locale-gen en_US.UTF-8 && \
+    update-locale LANG=en_US.UTF-8 && \
+    dpkg-reconfigure --frontend=noninteractive locales
+
+# Install pg_embedding extension
+RUN git clone https://github.com/neondatabase/pg_embedding.git && \
+    cd pg_embedding && make && make install && \
+    rm -rf /pg_embedding
+
+# Clean up
+RUN apt remove -y git build-essential && \
+    apt autoremove -y && \
+    rm -rf /var/lib/apt/lists/*
