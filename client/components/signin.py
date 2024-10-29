@@ -20,6 +20,10 @@ def show_signin(cookies):
                 ):
                     verify_email_dialog(email)
                 else:
-                    st.toast(response.get("error").get("detail") if response.get("error")["detail"] else response.get("error"))
+                    st.toast(
+                        response.get("error").get("detail")
+                        if response.get("error")["detail"]
+                        else response.get("error")
+                    )
         else:
             st.warning("Please enter both email and password.")
