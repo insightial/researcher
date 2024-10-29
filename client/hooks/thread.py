@@ -13,7 +13,7 @@ def get_user_threads(cookies):
     )
     if response.status_code == 200:
         return response.json()["threads"]
-    st.error("Failed to fetch user threads")
+    st.toast("Failed to fetch user threads")
     return []
 
 
@@ -24,7 +24,7 @@ def clear_thread_history(cookies):
         json={"thread_id": st.session_state.current_thread},
     )
     if response.status_code != 200:
-        st.error("Failed to clear thread history")
+        st.toast("Failed to clear thread history")
 
 
 def get_messages_by_thread_id(thread_id, cookies):
@@ -35,7 +35,7 @@ def get_messages_by_thread_id(thread_id, cookies):
     )
     if response.status_code == 200:
         return response.json()["messages"]
-    st.error("Failed to fetch messages for the selected thread")
+    st.toast("Failed to fetch messages for the selected thread")
     return []
 
 
@@ -48,12 +48,12 @@ def create_new_thread(cookies, message_container):
         thread_id = response.json()["thread_id"]
         st.session_state.current_thread = thread_id
         with message_container:
-            st.success(f"New thread created: {thread_id}")
+            st.toast(f"New thread created: {thread_id}")
             time.sleep(3)
             st.empty()
     else:
         with message_container:
-            st.error("Failed to create a new thread")
+            st.toast("Failed to create a new thread")
             time.sleep(3)
             st.empty()
 

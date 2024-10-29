@@ -9,9 +9,9 @@ def show_signin(cookies):
         if email and password:
             user = authenticate_user(email, password, cookies)
             if user:
-                st.success("Login successful!")
+                st.toast("Login successful!")
                 st.rerun()
             else:
-                st.error("Login failed. Please check your credentials.")
+                st.toast("Login failed. Please check your credentials.")
         else:
             st.warning("Please enter both email and password.")

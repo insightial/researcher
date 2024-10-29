@@ -9,7 +9,7 @@ def show_signup():
     if st.button("Sign up"):
         if new_username and new_password and email:
             if sign_up_user(new_username, new_password, email):
-                st.success(
+                st.toast(
                     "Sign up successful! Please check your email for verification."
                 )
         else:
