@@ -1,5 +1,5 @@
 import os
-
+import json
 import requests
 from dotenv import load_dotenv
 
@@ -26,10 +26,10 @@ def authenticate_user(email, password, cookies):
             if session_cookie:
                 cookies["access_token"] = session_cookie
                 cookies.save()
-            return response.json()
-        raise ValueError(f"Authentication failed: {response.text}")
+            return {"success": True, "data": response.json()}
+        return {"error": json.loads(response.text)}
     except requests.exceptions.RequestException as e:
-        raise ValueError(f"Authentication failed: {e}") from e
+        return {"error": e}
 
 
 def sign_up_user(username, password, email):
@@ -43,15 +43,13 @@ def sign_up_user(username, password, email):
             json={"username": username, "password": password, "email": email},
         )
         if response.status_code == 200:
-            return True
-        print(f"Sign up failed: {response.text}")
-        return False
+            return {"success": True}
+        return {"error": f"Sign up failed: {response.text}"}
     except requests.exceptions.RequestException as e:
-        print(f"Sign up failed: {e}")
-        return False
+        return {"error": f"Sign up failed: {e}"}
 
 
-def verify_email(username, verification_code):
+def verify_email(email, code):
     """
     Verifies a user's email with the provided verification code.
     Returns True if successful, False otherwise.
@@ -59,26 +57,26 @@ def verify_email(username, verification_code):
     try:
         response = requests.post(
             f"{RESEARCHER_API_ENDPOINT}/verify-email",
-            json={"username": username, "verification_code": verification_code},
+            json={"email": email, "code": code},
         )
         if response.status_code == 200:
             return True
-        print(f"Email verification failed: {response.text}")
+        # print(f"Email verification failed: {response.text}")
         return False
     except requests.exceptions.RequestException as e:
-        print(f"Email verification failed: {e}")
+        # print(f"Email verification failed: {e}")
         return False
 
 
-def resend_verification_code(username):
+def resend_verification_code(email):
     """
     Resends a verification code to the user's email.
     Returns True if successful, False otherwise.
     """
     try:
         response = requests.post(
-            f"{RESEARCHER_API_ENDPOINT}/resend-verification-code",
-            json={"username": username},
+            f"{RESEARCHER_API_ENDPOINT}/resend-code",
+            json={"email": email},
         )
         if response.status_code == 200:
             return True

@@ -162,7 +162,7 @@ class VerificationModel(BaseModel):
     Class to define the login model.
     """
 
-    username: str
+    email: str
     code: str
 
 
@@ -171,8 +171,12 @@ async def verify_email(verification_model: VerificationModel, response: Response
     """
     Function to verify a user's email.
     """
-    username = verification_model.username
+    identifier = verification_model.email
     code = verification_model.code
+    users = await get_user(cognito_client, identifier, COGNITO_USER_POOL_ID)
+    if not user_exists(users):
+        raise HTTPException(status_code=404, detail="User not Found")
+    username = get_username(users)
     secret_hash = calculate_secret_hash(
         username, COGNITO_CLIENT_ID, COGNITO_CLIENT_SECRET
     )
@@ -225,7 +229,7 @@ class ResendModel(BaseModel):
     Class to define the Resend model.
     """
 
-    username: str
+    email: str
 
 
 @router.post("/resend-code")
@@ -233,7 +237,11 @@ async def resend_code(resend_model: ResendModel):
     """
     Function to resend verification code to the user
     """
-    username = resend_model.username
+    identifier = resend_model.email
+    users = await get_user(cognito_client, identifier, COGNITO_USER_POOL_ID)
+    if not user_exists(users):
+        raise HTTPException(status_code=404, detail="User not Found")
+    username = get_username(users)
     secret_hash = calculate_secret_hash(
         username, COGNITO_CLIENT_ID, COGNITO_CLIENT_SECRET
     )
