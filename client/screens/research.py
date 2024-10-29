@@ -8,7 +8,6 @@ from hooks import (
     get_messages_by_thread_id,
     get_user_threads,
 )
-from streamlit_cookies_manager import CookieManager
 
 
 def research_page(cookies):
@@ -72,20 +71,6 @@ def research_page(cookies):
             if msg["content"]:
                 message(msg["content"], is_user=(msg["type"] == "human"))
 
-    # Move chat input to the bottom of the page
-    st.markdown(
-        """
-        <style>
-        .stChatInput {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
     # React to user input
     if prompt := st.chat_input("What would you like to know?"):
         # Display user message in chat message container
@@ -100,4 +85,3 @@ def research_page(cookies):
         message(response, is_user=False)
         # Add assistant response to chat history
         st.session_state.messages.append({"role": "assistant", "content": response})
-
