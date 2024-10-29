@@ -14,5 +14,4 @@ def get_ai_response(prompt, cookies):
     )
     if response.status_code == 200:
         return response.json()["response"]
-    st.error("Failed to get AI response")
     return "I'm sorry, I couldn't process your request at the moment."

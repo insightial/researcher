@@ -10,7 +10,7 @@ def show_signin(cookies):
             user = authenticate_user(email, password, cookies)
             if user:
                 st.success("Login successful!")
-                st.switch_page("pages/chat.py")
+                st.rerun()
             else:
                 st.error("Login failed. Please check your credentials.")
         else:

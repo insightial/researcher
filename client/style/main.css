@@ -1,7 +1,13 @@
-.stApp {
+/* Full-width app styling */
+.stMainBlockContainer {
   background-color: #0f0f23;
   color: #b19cd9;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
+
+/* Customize button and input styling */
 .stButton > button {
   color: #ffffff;
   background-color: #7e5bef;
@@ -12,4 +18,9 @@
 .stTextInput > div > div > input {
   background-color: #1e1e3f;
   color: #ffffff;
+}
+
+/* Column adjustments for full width */
+.stColumn {
+  padding: 0 1rem !important; /* Reduces side padding */
 }

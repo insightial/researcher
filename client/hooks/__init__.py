@@ -1,8 +1,12 @@
-from .clear_thread_history import clear_thread_history
-from .create_new_thread import create_new_thread
-from .get_ai_response import get_ai_response
-from .get_messages_by_thread_id import get_messages_by_thread_id
-from .get_user_threads import get_user_threads
+from .chat import get_ai_response
+from .thread import (
+    clear_thread_history,
+    get_messages_by_thread_id,
+    get_user_threads,
+    create_new_thread,
+    update_thread_name,
+    delete_thread,
+)
 
 __all__ = [
     "clear_thread_history",
@@ -10,4 +14,6 @@ __all__ = [
     "get_messages_by_thread_id",
     "get_user_threads",
     "create_new_thread",
+    "update_thread_name",
+    "delete_thread",
 ]

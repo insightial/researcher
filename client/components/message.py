@@ -1,7 +1,7 @@
 import streamlit as st
 
 
-def message(content, is_user=False, key=None):
+def message(content, is_user=False):
     """
     Display a chat message in the Streamlit app.
 
@@ -11,6 +11,6 @@ def message(content, is_user=False, key=None):
     key (str): An optional unique key for the message component.
     """
     if is_user:
-        st.write(f"You: {content}", key=key)
+        st.chat_message("user").write(content)
     else:
-        st.write(f"Assistant: {content}", key=key)
+        st.chat_message("assistant").write(content)
