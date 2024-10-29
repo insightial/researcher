@@ -33,7 +33,7 @@ async def update_thread_name(
         raise HTTPException(status_code=404, detail="Thread not found")
 
     # Update thread name in the database
-    update_thread_name_in_db(thread_id, name)
+    await update_thread_name_in_db(thread_id, name)
     return {"message": "Thread name updated"}
 
 
