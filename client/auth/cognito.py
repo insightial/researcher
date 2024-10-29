@@ -2,7 +2,6 @@ import os
 
 import requests
 from dotenv import load_dotenv
-from streamlit_cookies_manager import CookieManager
 
 # Load environment variables
 load_dotenv()
@@ -25,7 +24,6 @@ def authenticate_user(email, password, cookies):
             # Extract the cookie from the response
             session_cookie = response.cookies.get("access_token")
             if session_cookie:
-                print("saving session cookie", session_cookie)
                 cookies["access_token"] = session_cookie
                 cookies.save()
             return response.json()
