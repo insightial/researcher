@@ -267,8 +267,6 @@ async def get_current_user(access_token: str = Cookie(None)):
     try:
         payload = verify_jwt_token(access_token, COGNITO_CLIENT_SECRET)
         username: str = payload.get("sub", None)
-        if username is None:
-            raise HTTPException(status_code=401, detail="Invalid token")
         return {"username": username, "email": payload.get("email")}
     except Exception as e:
         raise HTTPException(status_code=401, detail="Invalid token") from e

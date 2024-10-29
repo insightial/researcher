@@ -3,7 +3,8 @@
 import os
 from fastapi import APIRouter, UploadFile, File, HTTPException
 import boto3
-from .file import add_file, FileMetadata
+from .file import add_file, FileMetadata, Depends
+from .auth import get_current_user
 
 router = APIRouter()
 
@@ -11,20 +12,26 @@ router = APIRouter()
 s3_client = boto3.client("s3", region_name=os.environ.get("COGNITO_REGION"))
 S3_BUCKET = os.environ.get("S3_BUCKET")
 
+
 @router.post("/upload")
-async def upload_file(user_id: str, file: UploadFile = File(...)):
+async def upload_file(
+    file: UploadFile = File(...), current_user: dict = Depends(get_current_user)
+):
     """
     Function to upload a file to S3.
     """
+    user_id = current_user["username"]
     try:
         # Upload file to S3
-        s3_client.upload_fileobj(file.file, S3_BUCKET, f"files/{user_id}/{file.filename}")
+        s3_client.upload_fileobj(
+            file.file, S3_BUCKET, f"files/{user_id}/{file.filename}"
+        )
 
         # Prepare metadata for the database
         file_metadata = FileMetadata(
             user_id=user_id,
             file_name=file.filename,
-            s3_location=f"s3://{S3_BUCKET}/files/{user_id}/{file.filename}"
+            s3_location=f"s3://{S3_BUCKET}/files/{user_id}/{file.filename}",
         )
 
         try:
