@@ -15,11 +15,14 @@ async def get_messages_by_session_id(session_id: str):
     async with get_db_connection() as connection:
         cursor = connection.cursor()
         select_query = """
-        SELECT message->'data'->>'content' AS content, message->>'type' AS type
+        SELECT message->'data'->>'content' AS content, message->>'type' AS type, created_at
         FROM chat_history
         WHERE session_id = %s
         ORDER BY created_at;
         """
         await cursor.execute(select_query, (session_id,))
         messages = await cursor.fetchall()
-        return [{"content": message[0], "type": message[1]} for message in messages]
+        return [
+            {"content": message[0], "type": message[1], "created_at": message[2]}
+            for message in messages
+        ]
