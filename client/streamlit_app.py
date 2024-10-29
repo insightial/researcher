@@ -6,6 +6,7 @@ from auth.cognito import check_auth_status
 from streamlit_cookies_manager import CookieManager
 from components import footer, show_signin, show_signup
 from screens.research import research_page
+from screens.file import file_page
 
 # Initialize cookie manager once at the top
 cookies = CookieManager()
@@ -61,12 +62,19 @@ def logout():
     st.rerun()
 
 
+def research():
+    research_page(cookies)
+
+
+def files():
+    file_page(cookies)
+
+
 if __name__ == "__main__":
 
     research_pages = [
-        st.Page(
-            lambda: research_page(cookies), title="Research", icon=":material/science:"
-        )
+        st.Page(research, title="Research", icon=":material/science:"),
+        st.Page(files, title="Files", icon=":material/file_present:"),
     ]
     accounts_pages = [st.Page(logout, title="Logout", icon=":material/logout:")]
 

@@ -1,5 +1,6 @@
 import streamlit as st
 
+
 def message(content, is_user=False):
     """
     Display a chat message in the Streamlit app.
@@ -10,7 +11,7 @@ def message(content, is_user=False):
     """
     # Escape dollar signs to prevent LaTeX rendering in Streamlit
     safe_content = content.replace("$", "\$")
-    
+
     if is_user:
         st.chat_message("user").write(safe_content)
     else:

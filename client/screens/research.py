@@ -23,7 +23,7 @@ def research_page(cookies):
     st.title("Research Assistant")
 
     with st.sidebar:
-        st.subheader("Chat Threads")
+        st.markdown("**Chat Threads**")
         if st.button(
             ":heavy_plus_sign:", help="Create a new chat thread", key="new_thread"
         ):
