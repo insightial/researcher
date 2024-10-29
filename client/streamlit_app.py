@@ -59,6 +59,7 @@ def login():
 
 def logout():
     cookies["access_token"] = None
+    cookies.save()
     st.rerun()
 
 
@@ -71,7 +72,6 @@ def files():
 
 
 if __name__ == "__main__":
-
     research_pages = [
         st.Page(research, title="Research", icon=":material/science:"),
         st.Page(files, title="Files", icon=":material/file_present:"),
@@ -79,7 +79,7 @@ if __name__ == "__main__":
     accounts_pages = [st.Page(logout, title="Logout", icon=":material/logout:")]
 
     # Check authentication status
-    if cookies.ready() and check_auth_status(cookies):
+    if cookies.ready() and cookies.get("access_token") and check_auth_status(cookies):
         pg = st.navigation({"Research": research_pages, "Accounts": accounts_pages})
     else:
         pg = st.navigation([st.Page(login, title="Login", icon=":material/login:")])
