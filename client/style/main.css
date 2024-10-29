@@ -5,6 +5,7 @@
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
+  height: 100vh;
 }
 
 /* Customize button and input styling */
