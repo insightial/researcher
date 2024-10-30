@@ -66,14 +66,12 @@ class Store:
         )
         return text_splitter.split_documents(documents)
 
-    async def asimilarity_search(
-        self, query: str, k: int = 4, filter: Optional[dict] = None
-    ):
+    def similarity_search(self, query: str, k: int = 4, filter: Optional[dict] = None):
         """
         Perform similarity search. Handles both PGEmbedding and default VectorStore types.
         """
         if isinstance(self.vector_store, PGEmbedding):
-            results = await self.vector_store.similarity_search_with_score(
+            results = self.vector_store.similarity_search_with_score(
                 query=query, k=k, filter=filter
             )
         else:
