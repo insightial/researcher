@@ -16,27 +16,6 @@ class FileMetadata(BaseModel):
     s3_location: str
 
 
-@router.on_event("startup")
-async def create_tables():
-    """
-    Create necessary tables in the database.
-    """
-    async with get_db_connection() as conn:
-        async with conn.cursor() as cursor:
-            # Create user_files table if it doesn't exist
-            await cursor.execute(
-                """
-                CREATE TABLE IF NOT EXISTS user_files (
-                    id SERIAL PRIMARY KEY,
-                    user_id VARCHAR(255) NOT NULL,
-                    file_name VARCHAR(255) NOT NULL,
-                    s3_location VARCHAR(255) NOT NULL,
-                    deleted BOOLEAN DEFAULT FALSE
-                )
-                """
-            )
-
-
 @router.get("/files/")
 async def get_files(current_user: dict = Depends(get_current_user)):
     """
@@ -45,10 +24,23 @@ async def get_files(current_user: dict = Depends(get_current_user)):
     async with get_db_connection() as conn:
         async with conn.cursor() as cursor:
             await cursor.execute(
-                "SELECT * FROM user_files WHERE user_id = %s",
+                "SELECT id, user_id, file_name, s3_location, deleted FROM user_files WHERE user_id = %s",
                 (current_user["username"],),
             )
-            return await cursor.fetchall()
+            rows = await cursor.fetchall()
+
+            # Convert rows to a list of dictionaries
+            files = [
+                {
+                    "id": row[0],
+                    "user_id": row[1],
+                    "file_name": row[2],
+                    "s3_location": row[3],
+                    "deleted": row[4],
+                }
+                for row in rows
+            ]
+            return files
 
 
 @router.post("/file")
