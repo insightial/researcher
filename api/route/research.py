@@ -1,5 +1,5 @@
 import logging
-
+from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 
@@ -22,6 +22,7 @@ router = APIRouter()
 class ChatRequest(BaseModel):
     prompt: str
     thread_id: str
+    files: Optional[List[str]] = []
 
 
 # The /chat endpoint that accepts a chat request
@@ -54,9 +55,8 @@ async def chat(
     # Set up the initial graph state with previous chat history and new question
     graph_state = GraphState(
         question=chat_request.prompt,
-        chat_history=chat_history,  # Inject the chat history here
-        search_results=None,
-        response=None,
+        chat_history=chat_history,
+        files=chat_request.files,
     )
 
     await history.add_memory(chat_request.prompt, message_type="human")
