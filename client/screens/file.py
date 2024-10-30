@@ -12,7 +12,7 @@ def file_page(cookies):
     if file:
         with st.spinner("Uploading file..."):
             result = upload_file(cookies, file)
-            st.success(result.get("message", "File uploaded successfully"))
+            st.toast(result.get("message", "File uploaded successfully"))
 
     # Fetch and display files
     st.subheader("Your Files")

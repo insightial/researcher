@@ -22,7 +22,13 @@ def get_files(cookies):
         f"{RESEARCHER_API_ENDPOINT}/files/",
         cookies={"access_token": cookies.get("access_token")},
     )
-    return response.json()
+
+    if response.status_code == 200:
+        files = response.json()
+        return files
+    else:
+        st.error("Failed to fetch files: " + response.text)
+        return []
 
 
 # Function to delete a file

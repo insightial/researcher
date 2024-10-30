@@ -39,7 +39,7 @@ def get_messages_by_thread_id(thread_id, cookies):
     return []
 
 
-def create_new_thread(cookies, message_container):
+def create_new_thread(cookies):
     response = requests.post(
         f"{RESEARCHER_API_ENDPOINT}/thread",
         cookies={"access_token": cookies.get("access_token")},
@@ -47,15 +47,11 @@ def create_new_thread(cookies, message_container):
     if response.status_code == 200:
         thread_id = response.json()["thread_id"]
         st.session_state.current_thread = thread_id
-        with message_container:
-            st.toast(f"New thread created: {thread_id}")
-            time.sleep(3)
-            st.empty()
+        st.toast(f"New thread created: {thread_id}")
+        time.sleep(1)
     else:
-        with message_container:
-            st.toast("Failed to create a new thread")
-            time.sleep(3)
-            st.empty()
+        st.toast("Failed to create a new thread")
+        time.sleep(1)
 
 
 def update_thread_name(cookies, thread_id: str, new_name: str) -> None:
