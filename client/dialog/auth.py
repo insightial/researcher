@@ -6,7 +6,6 @@ from auth.cognito import verify_email, resend_verification_code
 def verify_email_dialog(email):
     st.write(f"Verify your email: {email}")
     verification_code = st.text_input("Verification Code")
-    
     # Arrange buttons in a row
     col1, col2 = st.columns(2)
     with col1:
