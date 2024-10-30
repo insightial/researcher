@@ -3,13 +3,15 @@ import uuid
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from researcher.embeddings.embeddings import Embeddings
+from researcher.store.vectorstore import Store
 from route.auth import router as auth_router
 from route.message import router as message_router
 from route.research import router as research_router
 from route.thread import router as thread_router
 from route.s3 import router as s3_router
 from route.file import router as file_router
-
+from langchain_community.vectorstores import PGEmbedding
 from researcher.checkpoint import BaseCheckpointManager
 from researcher.graph.researcher import Researcher
 from researcher.utils.database import close_db_pool, get_db_connection_str, init_db_pool
@@ -40,7 +42,25 @@ async def lifespan(_: FastAPI) -> AsyncIterator[State]:
     checkpoint_manager = BaseCheckpointManager(
         checkpoint_type="postgres", conn_string=get_db_connection_str()
     )
+
+    embeddings = Embeddings(
+        embedding_provider="openai", model="text-embedding-3-small"
+    ).get_embeddings()
+    collection_name = "user_files"
+    connection_string = get_db_connection_str()
+    vector_store = PGEmbedding.from_existing_index(
+        embedding=embeddings,
+        collection_name=collection_name,
+        pre_delete_collection=False,
+        connection_string=connection_string,
+    )
+    store = Store(
+        vector_store_type="pgembedding",
+        vector_store=vector_store,
+    )
+
     researcher = await Researcher.create_researcher(
+        vector_store=store,
         checkpoint_manager=checkpoint_manager,
     )
 
@@ -50,7 +70,7 @@ async def lifespan(_: FastAPI) -> AsyncIterator[State]:
 
         # Generate a visualization of the graph
         graph.get_graph().draw_mermaid_png(output_file_path="docs/researcher_graph.png")
-        yield {"graph": graph}
+        yield {"graph": graph, "store": store}
 
     # Close the database connection pool on shutdown
     await close_db_pool()
