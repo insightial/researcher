@@ -4,10 +4,11 @@ from researcher.checkpoint import BaseCheckpointManager
 from researcher.llm import LLMProvider
 from researcher.retriever import TavilyRetriever
 from researcher.state import GraphState
+from researcher.store.vectorstore import Store
 
 
 class Researcher:
-    def __init__(self, **kwargs):
+    def __init__(self, vector_store: Store, **kwargs):
         """
         Initialize the synchronous Researcher class.
         """
@@ -35,15 +36,17 @@ class Researcher:
         self.max_iterations = kwargs.get("max_iterations", 3)
         self.iterations = 0
 
+        self.store = vector_store
+
         # Add nodes and edges to the graph
         self.add_graph_nodes_and_edges()
 
     @classmethod
-    async def create_researcher(cls, **kwargs):
+    async def create_researcher(cls, vector_store: Store, **kwargs):
         """
         Create a researcher with the specified checkpointer manager and settings.
         """
-        self = cls()
+        self = cls(vector_store)
         checkpoint_manager = kwargs.pop("checkpoint_manager", None)
         if checkpoint_manager is None:
             checkpoint_manager = BaseCheckpointManager()
@@ -64,9 +67,9 @@ class Researcher:
         tavily_params = {**default_tavily_params, **kwargs}
         self.retriever = TavilyRetriever(**tavily_params)
 
-        # Set maximum iterations from kwargs, defaulting to 3 if not provided
-        self.max_iterations = kwargs.get("max_iterations", 3)
-        self.iterations = 0
+        # Set maximum iterations from kwargs, defaulting to 4 if not provided
+        self.max_iterations = kwargs.get("max_iterations", 4)
+        self.iterations = 1
 
         # Add nodes and edges to the graph
         self.add_graph_nodes_and_edges()
@@ -83,6 +86,7 @@ class Researcher:
         # Define nodes
         self.graph.add_node("generate_query", self.generate_query)
         self.graph.add_node("query_tavily", self.query_tavily)
+        self.graph.add_node("query_vector_store", self.query_vector_store)
         self.graph.add_node("generate_response", self.generate_response)
         self.graph.add_node("generate_new_query", self.generate_new_query)
         self.graph.add_node("final_response", self.final_response)
@@ -96,8 +100,15 @@ class Researcher:
                 "limit_reached": "final_response",
             },
         )
+
+        # After generate_query, go to both query_tavily and query_vector_store
         self.graph.add_edge("generate_query", "query_tavily")
+        self.graph.add_edge("generate_query", "query_vector_store")
+
+        # After both queries, merge results
         self.graph.add_edge("query_tavily", "generate_response")
+        self.graph.add_edge("query_vector_store", "generate_response")
+
         self.graph.add_conditional_edges(
             "generate_response",
             self.validate_response,
@@ -107,6 +118,7 @@ class Researcher:
             },
         )
         self.graph.add_edge("generate_new_query", "query_tavily")
+        self.graph.add_edge("generate_new_query", "query_vector_store")
         self.graph.add_edge("final_response", END)
 
     async def generate_query(self, state: GraphState):
@@ -129,22 +141,38 @@ class Researcher:
         search_results = await self.retriever.search(question)
         return {"search_results": search_results}
 
+    def query_vector_store(self, state: GraphState):
+        """
+        Query the vector store using the generated or refined query.
+        """
+        vector_store_results = []
+        if state["files"] and len(state["files"]) > 0:
+            question = state["question"]
+            vector_store_results = self.store.similarity_search(
+                question,
+                k=self.iterations * 5,
+                filter={"source": {"in": state["files"]}},
+            )
+        return {"vector_store_results": vector_store_results}
+
     async def generate_response(self, state: GraphState):
         """
-        Generate a response based on Tavily search results, the question, and the chat history.
+        Generate a response based on Tavily search results, vector store results, the question, and the chat history.
         """
         search_results = state["search_results"]
+        vector_store_results = (
+            state["vector_store_results"] if "vector_store_results" in state else []
+        )
         question = state["question"]
-        chat_history = "\n".join(state["chat_history"])
 
         # Include chat history and search results in the prompt
         prompt = (
-            f"Conversation History:\n{chat_history}\n\n"
-            f"Search Results:\n{search_results}\n\n"
+            f"Web Search Results:\n{search_results}\n\n"
+            f"File Search Results:\n{vector_store_results}\n\n"
             f"Question: {question}\nProvide a comprehensive answer."
         )
         response = await self.llm.agenerate([prompt])
-        return {"response": response}
+        return {"response": response.strip()}
 
     async def validate_response(self, state: GraphState):
         """
