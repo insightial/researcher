@@ -1,3 +1,4 @@
+/*
 resource "aws_rds_cluster" "user_db_cluster" {
   cluster_identifier      = "user-db-cluster"
   engine                  = "aurora-postgresql"
@@ -28,3 +29,4 @@ resource "aws_rds_cluster" "user_db_cluster" {
     Environment = "Production"
   }
 }
+*/
