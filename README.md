@@ -1,6 +1,6 @@
 # Multi Agent Researcher
 
-The Researcher project is a comprehensive solution designed to facilitate research by integrating various components such as document processing, embeddings, chat history management, and state management. It leverages advanced technologies like OpenAI's language models and PostgreSQL for data persistence.
+The Multi Agent Researcher project is an advanced research tool designed to automate and enhance the process of gathering, analyzing, and synthesizing information from both web and local sources. It integrates various components such as document processing, embeddings, chat history management, and state management, leveraging technologies like OpenAI's language models and PostgreSQL for data persistence.
 
 ## Overview
 
@@ -15,6 +15,14 @@ This project is organized into several modules, each with its own README file pr
 - **[Initialization SQL Scripts](./init/README.md)**: Provides SQL scripts for setting up the database schema, including tables for chat history, checkpoints, and user files.
 
 - **[Client Module](./client/README.md)**: Describes the client-side components of the project, built using Streamlit, providing a user-friendly interface for interacting with the Researcher project.
+
+## Key Features
+
+- **PGEmbeddings**: Utilized for PostgreSQL tables, offering superior performance [compared to PGVector](https://neon.tech/blog/pg-embedding-extension-for-vector-search) for storing and querying vector data.
+- **Streamlit Frontend**: Provides an interactive and user-friendly interface for users to manage files, conduct research, and collaborate.
+- **FastAPI Backend**: Handles API requests efficiently, managing user authentication, file operations, and research functionalities.
+- **Langgraph AI Agent**: Implements a cyclic agentic loop for researching any topic, inspired by [GPT Researcher](https://github.com/assafelovic/gpt-researcher/tree/master)
+- **Vectorstore**: Used for storing and searching documents and chat history, ensuring efficient retrieval and management of data.
 
 ## Installation
 
